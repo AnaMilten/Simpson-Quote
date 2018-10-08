@@ -1,9 +1,15 @@
 import React, { Component } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import Lamp from "./Lamp";
+import GenerateSimpson from './GenerateSimpson';
+import DisplaySimpson from './DisplaySimpson';
 
-import Quote from "./Quote";
+
+const sampleQuote = {
+  image : "https://cdn.glitch.com/3c3ffadc-3406-4440-bb95-d40ec8fcde72%2FNelsonMuntz.png?1497567511185",
+  quote : "Shoplifting is a victimless crime, like punching someone in the dark.",
+  character: "Nelson Muntz",
+};
 
 
 
@@ -12,45 +18,40 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      working: false
+      // on peut mettre notre sampleEmployee par défaut
+      // afin d'avoir toujours un employé d'affiché
+      item: sampleQuote,
     };
-    this.workingClick = this.workingClick.bind(this);
   }
-
-
-  workingClick() {
-    this.setState({
-      working: !this.state.working,
+  
+  getQuote() {
+    // Récupération de l'employé via fetch
+    fetch("https://thesimpsonsquoteapi.glitch.me/quotes?count=5")
+      .then(response  =>  response.json())
+      .then(data  => {
+        // Une fois les données récupérées, on va mettre à jour notre state avec les nouvelles données
+        this.setState({
+          item: data[0],
+        });
     });
-  };
+}
 
 
   render() {
 
-    const fast = (this.state.working) ? "Move Faster" : "Duh ! Slow down !";
-    const cssWork = (this.state.working) ? "App-logo" : "App-logo-faster";
-    
+
+
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className={cssWork} alt="logo" />
-          <h1 className="App-title">Simpsons Quotes</h1>
+          <img src={logo} className="App-logo" alt="logo" />
+          <h1 className="App-title">Get Simpson's Quotes</h1>
         </header>
 
-        <button onClick={this.workingClick} >{fast}</button>
+        <GenerateSimpson  selectSimpson={() =>  this.getQuote()}  />
+        <DisplaySimpson  item={this.state.item}  />
 
-        <Lamp on />
-        <Lamp />
-        <Quote
-          quote="I believe the children are the future... Unless we stop them now!"
-          character="Homer Simpson"
-          image="https://cdn.glitch.com/3c3ffadc-3406-4440-bb95-d40ec8fcde72%2FHomerSimpson.png?1497567511939"
-        />
-        <Quote
-          quote="Me fail English? That's unpossible"
-          character="Ralph Wiggum"
-          image="https://cdn.glitch.com/3c3ffadc-3406-4440-bb95-d40ec8fcde72%2FRalphWiggum.png?1497567511523"
-        />
+
       </div>
     );
   }
